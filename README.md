@@ -1,112 +1,58 @@
-## A counter web application built using Node.js, Nginx proxy and Redis database
+# Multi-Container Applications with Docker
 
+## Introduction
 
+Multi-container applications allow developers to split complex applications into smaller, specialized services that work together.
 
-Project structure:
-```
-tree
-.
-├── LICENSE
-├── README.md
-├── compose.yml
-├── nginx
-│   ├── Dockerfile
-│   └── nginx.conf
-└── web
-    ├── Dockerfile
-    ├── package-lock.json
-    ├── package.json
-    └── server.js
+### What Are Multi-Container Applications?
+Multi-container applications divide functionality across multiple containers, each handling a specific part of the application. This approach:
 
-3 directories, 9 files
+- Promotes separation of concerns
+- Increases modularity
+- Improves maintainability
+- Enhances scalability
 
-```
-[_compose.yml_](compose.yml)
-```
+## Build the images 
+build two images into each of their directories
 
-services:
-  redis:
-    image: redis
-    ports:
-      - '6379:6379'
-  web1:
-    restart: on-failure
-    build: ./web
-    hostname: web1
-    ports:
-      - '81:5000'
-  web2:
-    restart: on-failure
-    build: ./web
-    hostname: web2
-    ports:
-      - '82:5000'
-  nginx:
-    build: ./nginx
-    ports:
-    - '80:80'
-    depends_on:
-    - web1
-    - web2
-```
-The compose file defines an application with four services `redis`, `nginx`, `web1` and `web2`.
-When deploying the application, Docker compose maps port 80 of the nginx service container to port 80 of the host as specified in the file.
+![alt text](buildnginx.png)
 
+![alt text](buildweb.png)
 
-> ℹ️ **_INFO_**  
-> Redis runs on port 6379 by default. Make sure port 6379 on the host is not being used by another container, otherwise the port should be changed.
+## Run the containers 
 
-## Deploy with docker compose
+- redis 
 
-```
-$ docker compose up -d
-[+] Running 24/24
- ⠿ redis Pulled                                                                                                                                                                                                                      ...
-   ⠿ 565225d89260 Pull complete                                                                                                                                                                                                      
-[+] Building 2.4s (22/25)
- => [nginx-nodejs-redis_nginx internal] load build definition from Dockerfile                                                                                                                                                         ...
-[+] Running 5/5
- ⠿ Network nginx-nodejs-redis_default    Created                                                                                                                                                                                      
- ⠿ Container nginx-nodejs-redis-web2-1   Started                                                                                                                                                                                      
- ⠿ Container nginx-nodejs-redis-redis-1  Started                                                                                                                                                                                      
- ⠿ Container nginx-nodejs-redis-web1-1   Started                                                                                                                                                                                      
- ⠿ Container nginx-nodejs-redis-nginx-1  Started
-```
+![alt text](runredis.png)
 
+- web 1 and 2 
 
-## Expected result
+![alt text](runweb.png)
 
-Listing containers must show three containers running and the port mapping as below:
+- nginx - while running nginx change the ports from 8080 to 9090 since it will already be in use.
 
+![alt text](runnginx.png)
 
-```
-docker compose ps
-```
+Now to see if the containers are up and running, execute the command 
 
-## Testing the app
+``` docker ps ```
 
-After the application starts, navigate to `http://localhost:80` in your web browser or run:
+![alt text](dockerps.png)
 
-```
-curl localhost:80
-curl localhost:80
-web1: Total number of visits is: 1
-```
+In docker desktop
 
-```
-curl localhost:80
-web1: Total number of visits is: 2
-```
-```
-$ curl localhost:80
-web2: Total number of visits is: 3
-```
+![alt text](containers.png)
 
+## Simplify the deployment using Docker Compose
 
+Using ```docker compose up``` run the application.
 
-## Tear down the containers
+![alt text](composeup.png)
 
-```
-$ docker compose down
-```
+The containers are up and running.
 
+![alt text](containers2.png)
+
+## Conclusion
+
+Multi-container applications represent a modern approach to application architecture, allowing developers to build more maintainable, scalable software. Docker Compose simplifies the process of defining, running, and managing these interconnected services
